@@ -1,7 +1,16 @@
-const express = require("express");
-const router = express.Router();
-const { getAllUsers } = require("../controllers/userController");
+const db = require("../db");
 
-router.get("/users", getAllUsers);
+module.exports = async (req, res) => {
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-module.exports = router;
+  db.query("SELECT id, email, role FROM users", (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    res.status(200).json(results);
+  });
+};
